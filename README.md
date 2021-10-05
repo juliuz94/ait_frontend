@@ -3,7 +3,7 @@
 ### Step 1
 Clone the repo 
 ```sh
-git clone 
+git clone git@github.com:juliuz94/ait_frontend.git
 ```
   
 ### Step 2
