@@ -1,0 +1,75 @@
+.dashboard_container {
+  display: flex;
+  height: 100vh;
+  max-height: 100vh;
+  width: 100%;
+  overflow-y: scroll;
+  background: rgb(240, 240, 240);
+}
+
+.sidebar {
+  width: 100px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar h1 {
+  font-weight: 800;
+  position: absolute;
+  top: 1rem;
+}
+
+.sidebar ul {
+  padding: 0px;
+  list-style-type: none;
+}
+
+.sidebar ul li {
+  width: 50px;
+  height: 50px;
+  padding: 0.2rem;
+  background-color: rgb(236, 236, 236);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  margin: 0.5rem 0;
+}
+
+.sidebar ul li svg {
+  width: 20px;
+  height: 20px;
+}
+
+.module_container {
+  padding: 3rem;
+  flex: 1;
+}
+
+.module_container .module_title {
+  margin-bottom: 2rem;
+}
+
+.client_data_row {
+  min-height: 400px;
+}
+
+.client_data_row .data_card {
+  background-color: #fff;
+  padding: 2rem 1.5rem;
+  border-radius: 5px;
+  margin: 0 1rem;
+}
+
+.table_data_row {
+  width: 100%;
+  padding: 3rem 0rem 1rem;
+  --bs-gutter-x: 0;
+  --bs-gutter-y: 0;
+}
