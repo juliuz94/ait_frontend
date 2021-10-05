@@ -2,36 +2,40 @@ import { useState, useEffect, useContext } from 'react'
 import styles from './styles.module.css';
 import Sidebar from './ui/sidebar';
 import PieChart from './ui/pieChart';
-import { Container, Row, Col, Table } from 'react-bootstrap';
+import { Container, Row, Col, Table, Form, InputGroup, Button } from 'react-bootstrap';
+import { BsArrowRightShort, BsFillCloudUploadFill, BsFillTrashFill } from 'react-icons/bs';
 import { Context } from '../../context/Context';
 import { useRouter } from 'next/router';
 import axios from '../../utils/axios';
 
 const Dashboard = ({ user = undefined }) => {
-  const { setUserName, userData, clientData, setClientData, setUserData } = useContext(Context);
+  const { setUserName, userName, userData, clientData, setClientData, setUserData } = useContext(Context);
+  const [popularCountries, setPopularCountries] = useState([]);
+  const [popularCities, setPopularCities] = useState([]);
+  const [popularCategories, setPopularCategories] = useState([]);
+  const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false)
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
       const clientData = await axios.get(`/client?userCreated=${user}`);
       setClientData(clientData.data)
-      if (clientData.data.count > 0) {
-        const userData = await axios.get(`/client/metadata?userName=${user}`);
-        setUserData(userData.data.data.clientData);
-      } 
+      const userData = await axios.get(`/client/metadata?userName=${user}`);
+      console.log(userData)
+      setUserData(userData.data.data.clientData);
+
     }
 
-    if(user !== undefined) {
+    if (user !== undefined) {
       setUserName(user);
       fetchData();
-    };
+    }
 
   }, [user])
 
-  const [popularCountries, setPopularCountries] = useState([]);
-  const [popularCities, setPopularCities] = useState([]);
-  const [popularCategories, setPopularCategories] = useState([]);
 
-  const router = useRouter();
+
 
   const transformArray = (array = []) => {
     let res = [];
@@ -45,6 +49,7 @@ const Dashboard = ({ user = undefined }) => {
     });
     return res;
   }
+
 
   useEffect(() => {
     if (!userData) {
@@ -62,7 +67,38 @@ const Dashboard = ({ user = undefined }) => {
     }
   }, [userData])
 
+  const handleSelectFile = (e) => {
+    console.log(e.target.files[0]);
+    setFile(e.target.files[0]);
+  }
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true)
+    setUserData(null);
+    setClientData(null);
+    setPopularCountries([]);
+    setPopularCities([]);
+    setPopularCategories([]);
+
+    try {
+      let formData = new FormData();
+      formData.append("file", file);
+      formData.append("userName", userName);
+      const res = await axios.post('/client', formData);
+      setFile(null);
+      const clientData = await axios.get(`/client?userCreated=${userName}`);
+      setClientData(clientData.data);
+      const userData = await axios.get(`/client/metadata?userName=${userName}`);
+      setUserData(userData.data.data.clientData);
+      setLoading(false);
+      
+    } catch (error) {
+      console.log(error)
+    }
+
+
+  }
 
   return (
     <div className={styles.dashboard_container}>
@@ -76,6 +112,31 @@ const Dashboard = ({ user = undefined }) => {
               <h1>
                 Clientes
               </h1>
+            </Col>
+            <Col className={styles.form_col}>
+              <form className={styles.form} onSubmit={handleSubmit}>
+                {(!file) && <><label htmlFor='file' className={styles.file_label}>
+                  Actualizar datos
+                  <BsFillCloudUploadFill />
+                </label>
+                  <input type='file' id='file' name='file' accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, text/csv" multiple={false} onChange={handleSelectFile} />
+                </>
+                }
+
+                {(file) && <div className={styles.file_container}>
+                  <p>
+                    {file.name}
+                  </p>
+                  <button type='button' onClick={() => setFile(null)}>
+                    <BsFillTrashFill />
+                  </button>
+                  <button type='submit' disabled={false}>
+                    Actualizar
+                    <BsArrowRightShort />
+                  </button>
+                </div>}
+
+              </form>
             </Col>
           </Row>
         </Container>
@@ -110,12 +171,12 @@ const Dashboard = ({ user = undefined }) => {
               <tbody>
                 {clientData && clientData.data.map(row => {
                   return (<tr key={row._id}>
-                  <td>{row.name}</td>
-                  <td>{row.country}</td>
-                  <td>{row.city}</td>
-                  <td>{row.category}</td>
-                  <td>{row.isActive.toString()}</td>
-                </tr>)
+                    <td>{row.name}</td>
+                    <td>{row.country}</td>
+                    <td>{row.city}</td>
+                    <td>{row.category}</td>
+                    <td>{row.isActive.toString()}</td>
+                  </tr>)
                 })}
               </tbody>
             </Table>

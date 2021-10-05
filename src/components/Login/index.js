@@ -42,14 +42,10 @@ const Login = () => {
       formData.append("userName", userName);
       await axios.post('/client', formData);
       setTimeout(async() => {
-        const clientData = await axios.get(`/client?userCreated=${userName}`);
-        setClientData(clientData.data);
-        const userData = await axios.get(`/client/metadata?userName=${userName}`);
-        setUserData(userData.data.data.clientData);
         router.push(`/dashboard?user=${userName}`);
         setLoading(false);
         setUserName(null)
-      }, 7000);
+      }, 2_000);
     } catch (error) {
       console.log(error)
       setLoading(false);
@@ -62,7 +58,6 @@ const Login = () => {
   const handleSetUserName = (e) => setUserName(e.target.value);
 
   const handleSelectFile = (e) => {
-    console.log(e.target.files[0]);
     setFile(e.target.files[0]);
   }
 
